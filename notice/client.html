@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebSocket Echo Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- <script src="http://cdn.bootcss.com/jquery/3.4.1/core.js"></script> -->
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.slim.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="vertical-center">
+    <div class="container">
+        <h1>Stock Chart over WebSocket</h1>
+        <button class="btn btn-primary">开始</button>
+        <button class="btn btn-danger">停止</button>
+        <table class="table" id="stockTable">
+            <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody id="stockRows">
+            <tr>
+                <td>
+                    <h3>AAPL</h3></td>
+                <td id="AAPL">
+                    <h3><span class="label label-default">95.00</span></h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>MSFT</h3></td>
+                <td id="MSFT">
+                    <h3><span class="label label-default">50.00</span></h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>AMZN</h3></td>
+                <td id="AMZN">
+                    <h3><span class="label label-default">300.00</span></h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>GOOG</h3></td>
+                <td id="GOOG">
+                    <h3><span class="label label-default">550.00</span></h3>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>YHOO</h3></td>
+                <td id="YHOO">
+                    <h3><span class="label label-default">35.00</span></h3>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    let myWorker =  new Worker('./worker.js');
+
+    $(".btn-primary").click(function() {
+        myWorker.postMessage('start');
+    });
+
+    $(".btn-danger").click(function() {
+        myWorker.postMessage('stop');
+    });
+
+    myWorker.onmessage = function(e) {
+        let res = e.data;
+        let list = res[res.type];
+        if(!Array.isArray(list)) return;
+
+        list.forEach(item => {
+            changeStockEntry(item.key, item.prev, item.cur);
+        });
+        setTimeout(() => {
+            notice({play: true})
+        }, 1000);
+    };
+
+
+    function changeStockEntry(symbol, originalValue, newValue) {
+        var valElem = $('#' + symbol + ' span');
+        valElem.html(newValue.toFixed(2));
+        if (newValue < originalValue) {
+            valElem.addClass('label-danger');
+            valElem.removeClass('label-success');
+        } else if (newValue > originalValue) {
+            valElem.addClass('label-success');
+            valElem.removeClass('label-danger');
+        }
+    }
+    function notice({ title = '新通知', content = '您有新的通知', play = false }) {
+        let options = {
+            body: content, // 通知显示内容
+            silent: true,
+            sound: 'https://bs.xcang.xyz/voice/notice_test.mp3',
+            requireInteraction: false, // 是否一直显示通知
+            icon: 'https://bs.xcang.xyz/image/icon.jpeg' // 通知显示的图片
+        };
+
+        // 生成audio
+        let audio = document.createElement('audio');
+
+        //音频地址
+        audio.src = 'https://bs.xcang.xyz/voice/notice_test.mp3';
+
+        // 先检查浏览器是否支持该API
+        if (!('Notification' in this)) {
+            alert('抱歉，该浏览器不支持Notification API');
+        } else {
+            let permission = Notification.permission;
+            // 判断用户是否允许接受通知
+            if (permission === 'granted') {
+                // 同意
+                let notice = new Notification(title, options);
+                play && audio.play();
+            } else if (permission === 'default') {
+                // 继续向用户询问是否允许接受通知
+                Notification.requestPermission().then((res) => {
+                    if (res === 'granted') {
+                        let notice = new Notification(title, options);
+                        play && audio.play();
+                    }
+                });
+        } else {
+            // 拒绝
+            console.log('用户拒绝了');
+        }
+    }
+}
+</script>
+</body>
+</html>

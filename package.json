@@ -1,0 +1,23 @@
+{
+  "name": "Notification",
+  "version": "1.0.0",
+  "description": "之前在浏览Youtube时，突然看到浏览器右上角弹出一个通知，点击就就进到了指定视频界面，感觉很是不错，如果加上**语音效果**结合WebSocket，正好可以用到自己的毕业设计之中。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XiaoDHuang/Notification.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/XiaoDHuang/Notification/issues"
+  },
+  "homepage": "https://github.com/XiaoDHuang/Notification#readme",
+  "dependencies": {
+    "ws": "^7.2.3"
+  }
+}

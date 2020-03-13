@@ -84,6 +84,8 @@ if (!('Notification' in window)) {
 ### 语音资源合成
 [百度广播开放平台](https://developer.baidu.com/vcast)
 
+https://wangchujiang.com/iNotify/
+
 ## 实际项目应用
 * 需求分析
   * [x] 打开标签， 避免多个标签页消息的重复提醒
