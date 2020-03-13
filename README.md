@@ -83,3 +83,6 @@ if (!('Notification' in window)) {
 ```
 ### 语音资源合成
 [百度广播开放平台](https://developer.baidu.com/vcast)
+
+## 在web worker + webSocket 使用
+通过share worker 多个标签页打开重复提醒
