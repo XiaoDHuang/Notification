@@ -86,3 +86,8 @@ if (!('Notification' in window)) {
 
 ## 在web worker + webSocket 使用
 通过share worker 多个标签页打开重复提醒
+### Notification 支持情况
+![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103139.png)
+### Share Workers兼容情况
+![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103427.png)
+### Shared Web Workers 支持情况
