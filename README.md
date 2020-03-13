@@ -84,10 +84,18 @@ if (!('Notification' in window)) {
 ### 语音资源合成
 [百度广播开放平台](https://developer.baidu.com/vcast)
 
-## 在web worker + webSocket 使用
-通过share worker 多个标签页打开重复提醒
-### Notification 支持情况
-![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103139.png)
-### Share Workers兼容情况
-![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103427.png)
-### Shared Web Workers 支持情况
+## 实际项目应用
+* 需求分析
+  * [x] 打开标签， 避免多个标签页消息的重复提醒
+  * [x] 打开点击消息， 可重定向已打开的标签页上， 避免多次打开消息， 重复打开相同标签页
+
+* 技术实现 
+  * 在share workers + webSocket 使用
+    * 通过share worker 避免多个标签页打开重复提醒
+  * 浏览器打开标签api ????
+
+* 调研html5 API支持情况
+  * Notification 支持情况
+  ![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103139.png)
+  * Share Workers兼容情况
+  ![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103427.png)
