@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #navfirst { height: 55px; overflow: hidden; min-width: 380px; position: absolute; width: 100%; top: 0px; background-color: #f7f7f7; border: 0px solid red; } 
+    div#navfirst ul#menu li a { text-indent: -9999px; overflow: hidden; text-decoration: none; }
+    div#navfirst ul#menu { height: 55px; width: 365px; background: transparent; margin: 0; padding: 0; position: relative; border: 0px solid red; float: left; } 
+    div#navfirst ul#menu li { margin: 0; padding: 0; list-style: none; position: absolute; top: 0; }
+    ul#menu li, ul#menu a { display: block; height: 55px; border-bottom: 0; }
+    #tiy_btn_index { left: 0; width: 65px; } 
+    #tiy_btn_index a { background: transparent url(https://www.w3school.com.cn/ui2019/tiy-bg.png) 0 0 no-repeat; }
+    #tiy_btn_stack { left: 65px; width: 65px; }
+    #tiy_btn_stack a { background: transparent url(https://www.w3school.com.cn/ui2019/tiy-bg.png) -65px 0 no-repeat; }
+    #tiy_btn_theme { left: 130px; width: 65px; }
+    #tiy_btn_theme a { background: transparent url(https://www.w3school.com.cn/ui2019/tiy-bg.png) -130px 0 no-repeat; }
+    #tiy_btn_tryit { left: 195px; width: 150px; }
+    #tiy_btn_tryit a { background: transparent url(https://www.w3school.com.cn/ui2019/tiy-bg.png) -195px 0 no-repeat; }
+    ul#menu li, ul#menu a { display: block; height: 55px; border-bottom: 0; }
+    #container { background-color: #f7f7f7; width: 100%; overflow: auto; position: absolute; top: 55px; bottom: 0px; height: auto; border: 0px solid #000000; clear: both; }
+</style>
+</head>
+<body>
+  <div id="navfirst">
+    <ul id="menu">
+      <li id="tiy_btn_index"><a href="/index.html" title="W3School 在线教程">W3School 在线教程</a></li>
+      <li id="tiy_btn_stack"><a href="javascript:void(0);" onclick="restack(currentStack)" title="更改方向">改变方向</a></li>
+      <li id="tiy_btn_theme"><a href="javascript:void(0);" onclick="retheme()" title="更改主题">暗黑模式</a></li>
+      <li id="tiy_btn_tryit"><a onclick="submitTryit()" title="更改主题">运行代码</a></li>
+    </ul>
+  </div>
+  <div id="container">
+    <textarea autocomplete="off" id="textareaCode" wrap="logical" spellcheck="false" style="display: none;"></textarea>
+    <form id="codeForm" autocomplete="off" style="margin:0px;display:none;" action="/tiy/v.asp" method="get" accept-charset="utf-8" target="iframeResult">
+      <input type="hidden" name="code" id="code" value=""/>
+    </form>
+    <div id="iframecontainer">
+      <div id="iframe">
+        <div id="iframewrapper">
+          <iframe frameborder="0" id="iframeResult" name="iframeResult"></iframe>
+        </div>
+      </div>
+    </div>
+    <a target="_blank" href="/index.html">跳转自动播放</a>
+  </div>
+</div>
+</body>
+<script>
+submitTryit();
+function submitTryit() {
+    if (window.editor) {window.editor.save();}
+    let text = document.getElementById("textareaCode").value;
+
+    let ifr = document.createElement("iframe");
+    ifr.setAttribute("frameborder", "0");
+    ifr.setAttribute("id", "iframeResult");
+    ifr.setAttribute("name", "iframeResult");  
+    document.getElementById("iframewrapper").innerHTML = "";
+    document.getElementById("iframewrapper").appendChild(ifr);
+
+    let  t = text;
+    t=t.replace(/=/gi,"w3equalsign");
+    t=t.replace(/\+/gi,"w3plussign");
+
+    //document.write(t);
+    var pos=t.search(/script/i);
+
+    while (pos>0) {
+      t=t.substring(0,pos) + "w3" + t.substr(pos,3) + "w3" + t.substr(pos+3,3) + "tag" + t.substr(pos+6);
+      pos=t.search(/script/i);
+    }
+
+    document.getElementById("code").value=t;
+    document.getElementById("codeForm").action = "/b.html";
+    document.getElementById('codeForm').method = "get";
+    document.getElementById('codeForm').acceptCharset = "utf-8";
+    document.getElementById('codeForm').target = "iframeResult";
+    document.getElementById("codeForm").submit();
+}
+</script>
+</html>

@@ -86,18 +86,69 @@ if (!('Notification' in window)) {
 
 https://wangchujiang.com/iNotify/
 
-## 实际项目应用
-* 需求分析
-  * [x] 打开标签， 避免多个标签页消息的重复提醒
-  * [x] 打开点击消息， 可重定向已打开的标签页上， 避免多次打开消息， 重复打开相同标签页
+## 关于audio自动播放问题
+```javascript
+  // 此代码可以放入 source 面板 Snippets 中运行， 不要放入控制台去运行， 控制台可以直接播放
+  let audio = document.createElement('audio');
+  audio.autoplay="autoplay";
+  audio.meted = false;
+  audio.src = 'http://127.0.0.1:3003/notice_test.mp3';
+  audio.play(); 
 
-* 技术实现 
-  * 在share workers + webSocket 使用
-    * 通过share worker 避免多个标签页打开重复提醒
-  * 浏览器打开标签api ????
+  // Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first.
+```
+发现谷歌浏览器在高版本中禁用 声音的自动播放问题，必须人为的去触发事件， 鼠标事件或键盘事件等还有控制台， 直接执行上面代码会直接报错
 
-* 调研html5 API支持情况
-  * Notification 支持情况
-  ![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103139.png)
-  * Share Workers兼容情况
-  ![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200313103427.png)
+在w3c 网站上去查看audio autoplay 属性时， 发现点击链接打开页面可以进行自动播放。 但刷新页面时， 不会再次播放。 还有一个规律就是， 只要首次播放了声音， javascript 代码就可以完成上述代码的直接播放。 出于好奇， 模拟了w3c代码实现, 代码如下
+
+```sh
+# 涉及表单提交 启动服务
+npx http-server . -p $port
+```
+```html
+  <form id="codeForm" autocomplete="off" style="margin:0px;display:none;" action="/b.html" method="get" accept-charset="utf-8" target="iframeResult">
+      <input type="hidden" name="code" id="code" value=""/>
+  </form> 
+  <div id="iframecontainer"> 
+    <div id="iframe">
+         <div id="iframewrapper">
+        <iframe frameborder="0" id="iframeResult" name="iframeResult"></iframe>
+      </div>
+    </div>
+  </div>
+  <script>
+    submitTryit();
+
+    function submitTryit() {
+        if (window.editor) {window.editor.save();}
+        let text = document.getElementById("textareaCode").value;
+
+        let ifr = document.createElement("iframe");
+        ifr.setAttribute("frameborder", "0");
+        ifr.setAttribute("id", "iframeResult");
+        ifr.setAttribute("name", "iframeResult");  
+        document.getElementById("iframewrapper").innerHTML = "";
+        document.getElementById("iframewrapper").appendChild(ifr);
+
+        let  t = text;
+        t=t.replace(/=/gi,"w3equalsign");
+        t=t.replace(/\+/gi,"w3plussign");
+
+        //document.write(t);
+        var pos=t.search(/script/i);
+
+        while (pos>0) {
+          t=t.substring(0,pos) + "w3" + t.substr(pos,3) + "w3" + t.substr(pos+3,3) + "tag" + t.substr(pos+6);
+          pos=t.search(/script/i);
+        }
+
+        document.getElementById("code").value=t;
+        document.getElementById("codeForm").action = "/b.html";
+        document.getElementById('codeForm').method = "get";
+        document.getElementById('codeForm').acceptCharset = "utf-8";
+        document.getElementById('codeForm').target = "iframeResult";
+        document.getElementById("codeForm").submit();
+    }
+  </script>
+```
+
