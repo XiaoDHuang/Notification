@@ -1,7 +1,75 @@
 # Notification
+
 ## 前言
 
 之前在浏览Youtube时，突然看到浏览器右上角弹出一个通知，点击就就进到了指定视频界面，感觉很是不错，如果加上**语音效果**结合WebSocket，正好可以用到自己的毕业设计之中。
+
+## 关于audio自动播放问题
+```javascript
+  // 此代码可以放入 source 面板 Snippets 中运行， 不要放入控制台去运行， 控制台可以直接播放
+  let audio = document.createElement('audio');
+  audio.autoplay="autoplay";
+  audio.meted = false;
+  audio.src = 'http://127.0.0.1:3003/notice_test.mp3';
+  audio.play(); 
+
+  // Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first.
+```
+发现谷歌浏览器在高版本中禁用 声音的自动播放问题，必须人为的去触发事件， 鼠标事件或键盘事件等还有控制台， 直接执行上面代码会直接报错
+
+在w3c 网站上去查看audio autoplay 属性时， 发现点击链接打开页面可以进行自动播放。 但刷新页面时， 不会再次播放。 还有一个规律就是， 只要首次播放了声音， javascript 代码就可以完成上述代码的直接播放。 出于好奇， 模拟了w3c代码实现, 代码如下
+
+```sh
+# 涉及表单提交 启动服务
+npx http-server . -p $port
+```
+
+```html
+  <form id="codeForm" autocomplete="off" style="margin:0px;display:none;" action="/b.html" method="get" accept-charset="utf-8" target="iframeResult">
+      <input type="hidden" name="code" id="code" value=""/>
+  </form>
+  <div id="iframecontainer"> 
+    <div id="iframe">
+         <div id="iframewrapper">
+        <iframe frameborder="0" id="iframeResult" name="iframeResult"></iframe>
+      </div>
+    </div>
+  </div>
+  <script>
+    submitTryit();
+
+    function submitTryit() {
+        if (window.editor) {window.editor.save();}
+        let text = document.getElementById("textareaCode").value;
+
+        let ifr = document.createElement("iframe");
+        ifr.setAttribute("frameborder", "0");
+        ifr.setAttribute("id", "iframeResult");
+        ifr.setAttribute("name", "iframeResult");  
+        document.getElementById("iframewrapper").innerHTML = "";
+        document.getElementById("iframewrapper").appendChild(ifr);
+
+        let  t = text;
+        t=t.replace(/=/gi,"w3equalsign");
+        t=t.replace(/\+/gi,"w3plussign");
+
+        //document.write(t);
+        var pos=t.search(/script/i);
+
+        while (pos>0) {
+          t=t.substring(0,pos) + "w3" + t.substr(pos,3) + "w3" + t.substr(pos+3,3) + "tag" + t.substr(pos+6);
+          pos=t.search(/script/i);
+        }
+
+        document.getElementById("code").value=t;
+        document.getElementById("codeForm").action = "/b.html";
+        document.getElementById('codeForm').method = "get";
+        document.getElementById('codeForm').acceptCharset = "utf-8";
+        document.getElementById('codeForm').target = "iframeResult";
+        document.getElementById("codeForm").submit();
+    }
+  </script>
+```
 
 ## 关于Notification API
 
@@ -14,6 +82,7 @@
 ## 构造方法
 
 `let notification = new Notification(title, options)`
+
 ### 参数
 > `title`：显示的通知标题  
 > `options`：设置通知的对象：其属性包含如下：  
@@ -25,8 +94,8 @@
  body | 显示的文本内容
  tag | 主键ID
  icon | 显示的图片地址
-### 兼容性
 
+### 兼容性
 
 ![](https://user-gold-cdn.xitu.io/2019/3/8/1695b8c80bdbe2eb?w=2078&h=228&f=png&s=52227)
 
@@ -86,69 +155,5 @@ if (!('Notification' in window)) {
 
 https://wangchujiang.com/iNotify/
 
-## 关于audio自动播放问题
-```javascript
-  // 此代码可以放入 source 面板 Snippets 中运行， 不要放入控制台去运行， 控制台可以直接播放
-  let audio = document.createElement('audio');
-  audio.autoplay="autoplay";
-  audio.meted = false;
-  audio.src = 'http://127.0.0.1:3003/notice_test.mp3';
-  audio.play(); 
-
-  // Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first.
-```
-发现谷歌浏览器在高版本中禁用 声音的自动播放问题，必须人为的去触发事件， 鼠标事件或键盘事件等还有控制台， 直接执行上面代码会直接报错
-
-在w3c 网站上去查看audio autoplay 属性时， 发现点击链接打开页面可以进行自动播放。 但刷新页面时， 不会再次播放。 还有一个规律就是， 只要首次播放了声音， javascript 代码就可以完成上述代码的直接播放。 出于好奇， 模拟了w3c代码实现, 代码如下
-
-```sh
-# 涉及表单提交 启动服务
-npx http-server . -p $port
-```
-```html
-  <form id="codeForm" autocomplete="off" style="margin:0px;display:none;" action="/b.html" method="get" accept-charset="utf-8" target="iframeResult">
-      <input type="hidden" name="code" id="code" value=""/>
-  </form> 
-  <div id="iframecontainer"> 
-    <div id="iframe">
-         <div id="iframewrapper">
-        <iframe frameborder="0" id="iframeResult" name="iframeResult"></iframe>
-      </div>
-    </div>
-  </div>
-  <script>
-    submitTryit();
-
-    function submitTryit() {
-        if (window.editor) {window.editor.save();}
-        let text = document.getElementById("textareaCode").value;
-
-        let ifr = document.createElement("iframe");
-        ifr.setAttribute("frameborder", "0");
-        ifr.setAttribute("id", "iframeResult");
-        ifr.setAttribute("name", "iframeResult");  
-        document.getElementById("iframewrapper").innerHTML = "";
-        document.getElementById("iframewrapper").appendChild(ifr);
-
-        let  t = text;
-        t=t.replace(/=/gi,"w3equalsign");
-        t=t.replace(/\+/gi,"w3plussign");
-
-        //document.write(t);
-        var pos=t.search(/script/i);
-
-        while (pos>0) {
-          t=t.substring(0,pos) + "w3" + t.substr(pos,3) + "w3" + t.substr(pos+3,3) + "tag" + t.substr(pos+6);
-          pos=t.search(/script/i);
-        }
-
-        document.getElementById("code").value=t;
-        document.getElementById("codeForm").action = "/b.html";
-        document.getElementById('codeForm').method = "get";
-        document.getElementById('codeForm').acceptCharset = "utf-8";
-        document.getElementById('codeForm').target = "iframeResult";
-        document.getElementById("codeForm").submit();
-    }
-  </script>
-```
-
+## webSocket + webWorker + Notification + audio 消息提示
+![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200317114206.png)
