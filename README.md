@@ -157,3 +157,6 @@ https://wangchujiang.com/iNotify/
 
 ## webSocket + webWorker + Notification + audio 消息提示
 ![](https://picgoimg.oss-cn-beijing.aliyuncs.com/20200317114206.png)
+
+## 资源链接
+- https://www.cnblogs.com/stoneniqiu/p/5402311.html
