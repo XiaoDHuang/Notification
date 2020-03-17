@@ -81,9 +81,8 @@
         list.forEach(item => {
             changeStockEntry(item.key, item.prev, item.cur);
         });
-        setTimeout(() => {
-            notice({play: true})
-        }, 1000);
+
+        notice({play: true})
     };
 
 

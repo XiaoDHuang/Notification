@@ -9,23 +9,17 @@ function startWebSocket(callback = function() {}) {
         "AAPL": 0, "MSFT": 0, "AMZN": 0, "GOOG": 0, "YHOO": 0
     };
 
-    init();
-
-    ws.onclose = function (e) {
-        console.log("Connection closed", e);
-        ws = null;
-    };
-
     return {
         stop() {
             if (!ws) return;
+
             ws.close();
             ws = null;
         },
         start() {
             if (ws) return; 
+
             init();
-            //updataUI()
         }
     }
 
@@ -54,6 +48,11 @@ function startWebSocket(callback = function() {}) {
                 type: 'dataList',
                 dataList: resData
             });
+        };
+
+        ws.onclose = function (e) {
+            console.log("Connection closed", e);
+            ws = null;
         };
     }
 }

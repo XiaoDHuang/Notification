@@ -12,7 +12,6 @@ this.onmessage = function(e) {
 
 function onGetData(data) {
     postMessage(data);
-    // notice({});
 }
 
 
